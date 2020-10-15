@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from entries import get_all_entries, get_single_entry, delete_entry
+from entries import get_all_entries, get_single_entry, delete_entry, update_entry
+from moods import get_all_moods
 import json
 
 # Here's a class. It inherits from another class.
@@ -61,39 +62,44 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f"{get_single_entry(id)}"
                 else:
                     response = f"{get_all_entries()}"
+            if resource == "moods":
+                if id is not None:
+                    pass
+                else:
+                    response = f"{get_all_moods()}"
 
 
-        self.wfile.write(response.encode())
+        self.wfile.write(str(response).encode())
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
-    def do_POST(self):
-        self._set_headers(201)
-        content_len = int(self.headers.get('content-length', 0))
-        post_body = self.rfile.read(content_len)
+    # def do_POST(self):
+    #     self._set_headers(201)
+    #     content_len = int(self.headers.get('content-length', 0))
+    #     post_body = self.rfile.read(content_len)
 
-        # Convert JSON string to a Python dictionary
-        post_body = json.loads(post_body)
+    #     # Convert JSON string to a Python dictionary
+    #     post_body = json.loads(post_body)
 
-        # Parse the URL
-        (resource, id) = self.parse_url(self.path)
+    #     # Parse the URL
+    #     (resource, id) = self.parse_url(self.path)
 
-        # Initialize new animal
-        new_animal = None
-        new_employee = None
-        new_location = None
-        new_customer = None
+    #     # Initialize new animal
+    #     new_animal = None
+    #     new_employee = None
+    #     new_location = None
+    #     new_customer = None
 
-        # Add a new animal to the list. Don't worry about
-        # the orange squiggle, you'll define the create_animal
-        # function next.
-        if resource == "animals":
-            new_animal = create_animal(post_body)
+    #     # Add a new animal to the list. Don't worry about
+    #     # the orange squiggle, you'll define the create_animal
+    #     # function next.
+    #     if resource == "animals":
+    #         new_animal = create_animal(post_body)
 
 
 
-        # Encode the new animal and send in response
-        self.wfile.write(f"{new_animal}".encode())
+    #     # Encode the new animal and send in response
+    #     self.wfile.write(f"{new_animal}".encode())
 
 
     # Here's a method on the class that overrides the parent's method.
@@ -108,8 +114,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         (resource, id) = self.parse_url(self.path)
 
         # Delete a single animal from the list
-        if resource == "animals":
-            update_animal(id, post_body)
+        if resource == "entries":
+            update_entry(id, post_body)
 
 
         # Encode the new animal and send in response

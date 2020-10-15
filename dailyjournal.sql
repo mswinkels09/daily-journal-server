@@ -24,4 +24,4 @@ INSERT INTO `Entry` VALUES (null, "07/26/2025", "Complex Flexbox", "I tried to h
 INSERT INTO `Entry` VALUES (null, "2020-08-19", "Many to Many", "Learned about many to many relationships. I understand the concepts but have trouble writing the code to be able  to create a many to many realtionship.", 4);
 
 
-SELECT * FROM Entry;
+SELECT * FROM Mood;
