@@ -17,8 +17,10 @@ def get_all_entries():
             a.date,
             a.concept,
             a.entry,
-            a.mood_id
-        FROM entry a
+            a.mood_id,
+            m.label
+        FROM Entry a
+        JOIN `Mood` m ON m.id = a.mood_id
         """)
 
         # Initialize an empty list to hold all entry representations
@@ -56,7 +58,7 @@ def get_single_entry(id):
             a.concept,
             a.entry,
             a.mood_id
-        FROM entry a
+        FROM Entry a
         WHERE a.id = ?
         """, ( id, ))
             #need a comma to make it a tuple (will create errors if no comma)
@@ -85,11 +87,10 @@ def create_entry(new_entry):
 
         db_cursor.execute("""
         INSERT INTO Entry
-            ( concept, entry, mood_id )
+            ( date, concept, entry, mood_id )
         VALUES
-            ( ?, ?, ?, ?, ?);
-        JOIN `Mood` m ON m.id = e.mood_id
-        """, (new_entry['concept'], new_entry['entry'],
+            ( ?, ?, ?, ?);
+        """, (new_entry['date'],new_entry['concept'], new_entry['entry'],
               new_entry['mood_id'], ))
 
         # The `lastrowid` property on the cursor will return
@@ -102,6 +103,8 @@ def create_entry(new_entry):
         # primary key in the response.
         new_entry['id'] = id
 
+    return json.dumps(new_entry)
+
 def update_entry(id, new_entry):
     with sqlite3.connect("./dailyjournal.db") as conn:
         db_cursor = conn.cursor()
@@ -109,11 +112,12 @@ def update_entry(id, new_entry):
         db_cursor.execute("""
         UPDATE Entry
             SET
+                date = ?,
                 concept = ?,
                 entry = ?,
                 mood_id = ?
         WHERE id = ?
-        """, (new_entry['concept'], new_entry['entry'],
+        """, (new_entry['date'], new_entry['concept'], new_entry['entry'],
               new_entry['mood_id'], id, ))
 
         # Were any rows affected?

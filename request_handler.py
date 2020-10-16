@@ -1,5 +1,6 @@
+from entries.request import create_entry
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from entries import get_all_entries, get_single_entry, delete_entry, update_entry
+from entries import get_all_entries, get_single_entry, delete_entry, update_entry, create_entry
 from moods import get_all_moods
 import json
 
@@ -41,6 +42,13 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+        self.send_header('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept') # or *
+        self.end_headers()
+
     # Here's a method on the class that overrides the parent's method.
     # It handles any GET request.
     def do_GET(self):
@@ -73,33 +81,30 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
-    # def do_POST(self):
-    #     self._set_headers(201)
-    #     content_len = int(self.headers.get('content-length', 0))
-    #     post_body = self.rfile.read(content_len)
+    def do_POST(self):
+        self._set_headers(201)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
 
-    #     # Convert JSON string to a Python dictionary
-    #     post_body = json.loads(post_body)
+        # Convert JSON string to a Python dictionary
+        post_body = json.loads(post_body)
 
-    #     # Parse the URL
-    #     (resource, id) = self.parse_url(self.path)
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
 
-    #     # Initialize new animal
-    #     new_animal = None
-    #     new_employee = None
-    #     new_location = None
-    #     new_customer = None
+        # Initialize new animal
+        new_entry = None
 
-    #     # Add a new animal to the list. Don't worry about
-    #     # the orange squiggle, you'll define the create_animal
-    #     # function next.
-    #     if resource == "animals":
-    #         new_animal = create_animal(post_body)
+        # Add a new animal to the list. Don't worry about
+        # the orange squiggle, you'll define the create_animal
+        # function next.
+        if resource == "entries":
+            new_animal = create_entry(post_body)
 
 
 
-    #     # Encode the new animal and send in response
-    #     self.wfile.write(f"{new_animal}".encode())
+        # Encode the new animal and send in response
+        self.wfile.write(f"{new_entry}".encode())
 
 
     # Here's a method on the class that overrides the parent's method.
